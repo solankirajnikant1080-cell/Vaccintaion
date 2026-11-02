@@ -1,1 +1,62 @@
+import React, { useState } from 'react';
+
+const UIP_PLAN = [
+  { name: "BCG, OPV-0, Hep-B", offset: 0, unit: 'days' },
+  { name: "Penta-1, OPV-1, Rota-1, PCV-1", offset: 42, unit: 'days' },
+  { name: "Penta-2, OPV-2, Rota-2, PCV-2", offset: 70, unit: 'days' },
+  { name: "Penta-3, OPV-3, Rota-3, PCV-3", offset: 98, unit: 'days' },
+  { name: "MR-1, PCV Booster", offset: 9, unit: 'months' },
+  { name: "MR-2, DPT Booster-1, OPV Booster", offset: 18, unit: 'months' },
+];
+
+export default function VaccinationApp() {
+  const [dob, setDob] = useState('');
+  const [schedule, setSchedule] = useState([]);
+
+  const calculateSchedule = () => {
+    const birthDate = new Date(dob);
+    const calculated = UIP_PLAN.map(vaccine => {
+      let dueDate = new Date(birthDate);
+      if (vaccine.unit === 'days') {
+        dueDate.setDate(birthDate.getDate() + vaccine.offset);
+      } else {
+        dueDate.setMonth(birthDate.getMonth() + vaccine.offset);
+      }
+      return { name: vaccine.name, date: dueDate.toDateString() };
+    });
+    setSchedule(calculated);
+  };
+
+  return (
+    <div style={{ padding: '20px', fontFamily: 'Arial' }}>
+      <h1>👶 Baby Vaccination Tracker (UIP)</h1>
+      <label>Enter Baby's Date of Birth: </label>
+      <input type="date" onChange={(e) => setDob(e.target.value)} />
+      <button onClick={calculateSchedule} style={{ marginLeft: '10px' }}>Generate Plan</button>
+
+      <div style={{ marginTop: '20px' }}>
+        {schedule.length > 0 && (
+          <table border="1" cellPadding="10" style={{ width: '100%', textAlign: 'left' }}>
+            <thead>
+              <tr>
+                <th>Vaccine Name</th>
+                <th>Due Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {schedule.map((item, index) => (
+                <tr key={index}>
+                  <td>{item.name}</td>
+                  <td>{item.date}</td>
+                  <td><input type="checkbox" /> Done</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
+}
 
